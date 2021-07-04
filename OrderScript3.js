@@ -3,7 +3,8 @@ const Shapes = host.ActivePage.ActiveLayer.Shapes
 const shapesCount = Shapes.Count;
 alert([host.ActivePage.ActiveLayer.Name, `Reordering ${shapesCount} Shapes`])
 let objectsIndices = Array.from(Array(shapesCount).keys())
-
+const pWidth = host.ActivePage.SizeWidth
+const pHeight = host.ActivePage.SizeHeight
 
 let wrappedShapes = objectsIndices.map(index => {
     const shape = Shapes.Item(index + 1);
@@ -15,7 +16,15 @@ let wrappedShapes = objectsIndices.map(index => {
 const getClosestShape = (shapes, currShape) => {
 	const excludedShapes = shapes.filter(a => a.ZOrder !== currShape.ZOrder);
 	const distanceToShapes = excludedShapes.map(target =>  { return {diff: getDifference(currShape, target), closestShape: target}});
-	const [target]= distanceToShapes.sort((a,b) => a.diff - b.diff);
+	const [target]= distanceToShapes.sort((a,b) => {
+	//return a.diff - b.diff
+	
+	if (a.diff === b.diff) {
+		return a.leftTopCornerDist - b.leftTopCornerDist
+	}
+	
+	return a.diff - b.diff
+	});
 	
     return target
 }
@@ -26,14 +35,23 @@ const getDifference = (pointA, pointB) => {
  	return Math.hypot(a, b);
 }
 
-wrappedShapes.forEach(obj => {
-    const {diff} = getClosestShape(wrappedShapes, obj)
-	obj.closestDifference = diff;
+wrappedShapes.forEach(shape => {
+    const {diff} = getClosestShape(wrappedShapes, shape)
+	shape.closestDifference = +diff.toFixed(1); // helpful for almost equal numbers
+	shape.leftTopCornerDist = getDifference(shape, {CenterX: 0, CenterY: pHeight});
+	//alert(shape.leftTopCornerDist )
 });
 
-wrappedShapes.sort((a, b) => a.closestDifference - b.closestDifference);
+wrappedShapes.sort((a, b) => { //sorting by 2 criteria, shapes with same closestDiff will be sorted by how close they are to top left corner
+	if (a.closestDifference === b.closestDifference) {
+		return a.leftTopCornerDist - b.leftTopCornerDist
+	}
+	
+	return a.closestDifference - b.closestDifference
+});
 
-const smallestDistShape = wrappedShapes[0];
+const closestShape = wrappedShapes[0];
+//const closestToLeftTopCorner = sameDiffShapes.find(shape => )
 
 const getNextShape = (currShape, shapes, count = 0) => {
     const excludedShapes = shapes.filter(s => s.ZOrder !== currShape.ZOrder);
@@ -45,7 +63,7 @@ const getNextShape = (currShape, shapes, count = 0) => {
     getNextShape(closestShape, excludedShapes, ++count)
 }
 
-getNextShape(smallestDistShape, wrappedShapes);
+getNextShape(closestShape, wrappedShapes);
 
 wrappedShapes.sort((a, b) => a.count - b.count);
 
