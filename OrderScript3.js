@@ -25,6 +25,16 @@ const getClosestShape = (shapes, currShape) => {
 	
 	return a.diff - b.diff
 	});
+		// for debugging purposes
+	//if (target && target2) {
+		// alert(['currShape', currShape.shape.Name, 'closest is',
+		//  target.closestShape.shape.Name,target.closestShape.leftTopCornerDist, 
+		//  target2.closestShape.shape.Name, target2.closestShape.leftTopCornerDist,
+		//  'difference',
+		//  target.closestShape.shape.Name,target.diff, 
+		//  target2.closestShape.shape.Name, target2.diff,
+		// ])
+	//}
 	
     return target
 }
@@ -32,12 +42,12 @@ const getClosestShape = (shapes, currShape) => {
 const getDifference = (pointA, pointB) => {
     const a = pointA.CenterX - pointB.CenterX
  	const b = pointA.CenterY - pointB.CenterY
- 	return Math.hypot(a, b);
+ 	return +Math.hypot(a, b).toFixed(1);  // helpful for almost equal numbers and js rounding problem
 }
 
 wrappedShapes.forEach(shape => {
     const {diff} = getClosestShape(wrappedShapes, shape)
-	shape.closestDifference = +diff.toFixed(1); // helpful for almost equal numbers
+	shape.closestDifference = diff;
 	shape.leftTopCornerDist = getDifference(shape, {CenterX: 0, CenterY: pHeight});
 	//alert(shape.leftTopCornerDist )
 });
