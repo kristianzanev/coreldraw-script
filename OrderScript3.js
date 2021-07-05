@@ -42,7 +42,7 @@ const getClosestShape = (shapes, currShape) => {
 const getDifference = (pointA, pointB) => {
     const a = pointA.CenterX - pointB.CenterX
  	const b = pointA.CenterY - pointB.CenterY
- 	return +Math.hypot(a, b).toFixed(1);  // helpful for almost equal numbers and js rounding problem
+ 	return +Math.hypot(a, b).toFixed(4);  // helpful for almost equal numbers and js rounding problem
 }
 
 wrappedShapes.forEach(shape => {
