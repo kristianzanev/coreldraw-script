@@ -20,7 +20,7 @@ const getClosestShape = (shapes, currShape) => {
 	//return a.diff - b.diff
 	
 	if (a.diff === b.diff) {
-		return a.leftTopCornerDist - b.leftTopCornerDist
+		return b.closestShape.CenterX - a.closestShape.CenterX
 	}
 	
 	return a.diff - b.diff
